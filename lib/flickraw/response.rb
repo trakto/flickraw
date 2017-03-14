@@ -4,7 +4,14 @@ class Response
     if h.is_a? Response
       h
     elsif type =~ /s$/ and (a = h[$`]).is_a? Array
-      ResponseList.new(h, type, a.collect {|e| Response.build(e, $`)})
+      if h['pages']
+        response = {}
+        response[:total_pages] = h['pages']
+        response[:response] = ResponseList.new(h, type, a.collect {|e| Response.build(e, $`)})
+        response
+      else
+        ResponseList.new(h, type, a.collect {|e| Response.build(e, $`)})
+      end
     elsif h.keys == ["_content"]
       h["_content"]
     else
